@@ -7,15 +7,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private PasswordEncoder bcryptEncoder;
+    private final PasswordEncoder bcryptEncoder;
 
     public JwtUserDetailsService(
             UserRepository userRepository,
@@ -26,6 +27,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.oldnews.backend.models.User user = userRepository.findByUsername(username).orElse(null);
 
@@ -36,8 +38,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     }
 
     public com.oldnews.backend.models.User save(com.oldnews.backend.models.User user) {
-        com.oldnews.backend.models.User newUser = new com.oldnews.backend.models.User();
-        newUser.setUsername(user.getUsername());
+        com.oldnews.backend.models.User newUser = new com.oldnews.backend.models.User(user);
         newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
         return userRepository.save(newUser);
     }

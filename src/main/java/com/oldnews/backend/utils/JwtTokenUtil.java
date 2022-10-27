@@ -1,5 +1,6 @@
 package com.oldnews.backend.utils;
 
+import com.oldnews.backend.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,12 +19,11 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration-time: 900_000}")
+    @Value("${jwt.expiration-time: 900000}")
     private long expirationTime;
 
-//    private static final long serialVersionUID = -2550185165626007488L;
-//
-//    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    @Value("${jwt.refresh-expiration-time: 1800000}")
+    private long refreshExpirationTime;
 
     /**
      * retrieve username from jwt token
@@ -64,20 +64,35 @@ public class JwtTokenUtil implements Serializable {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        return doGenerateToken(claims, userDetails.getUsername(), expirationTime);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, user.getUsername(), expirationTime);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userDetails.getUsername(), refreshExpirationTime);
+    }
+
+    public String generateRefreshToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, user.getUsername(), refreshExpirationTime);
+    }
+
+    private String doGenerateToken(Map<String, Object> claims, String subject, long expiration) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
     /**
      * validate token
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

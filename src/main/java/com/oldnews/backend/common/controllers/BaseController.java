@@ -27,12 +27,12 @@ public abstract class BaseController<T, Repo extends BaseRepository<T>> {
     }
 
     @GetMapping()
-    protected ResponseEntity<List<T>> GetAll() {
+    public ResponseEntity<List<T>> GetAll() {
         return ResponseEntity.ok().body(repository.findAll());
     }
 
     @PostMapping()
-    protected ResponseEntity<?> Post(
+    public ResponseEntity<?> Post(
             @RequestBody T body
     ) {
         return ResponseEntity.ok().build();

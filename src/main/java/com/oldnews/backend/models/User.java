@@ -1,25 +1,29 @@
 package com.oldnews.backend.models;
 
-import com.oldnews.backend.common.dtos.AuthRequestDTO;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 
-@Data
-@Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "`user`")
 public class User {
 
-    public User(AuthRequestDTO authRequestDTO) {
-        this.username = authRequestDTO.getUsername();
-        this.password = authRequestDTO.getPassword();
-    }
-
-    public User() {
+    /**
+     * Construct new User with a null password
+     */
+    public User(User newUser) {
+        this.username = newUser.getUsername();
+        this.firstName = newUser.getFirstName();
+        this.lastName = newUser.getLastName();
+        this.email = newUser.getEmail();
     }
 
     @Id
@@ -29,6 +33,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
