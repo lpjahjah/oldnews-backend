@@ -1,11 +1,14 @@
-package com.oldnews.backend.models;
+package com.oldnews.backend.app.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.oldnews.backend.common.models.BaseModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -14,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "`user`")
-public class User {
+public class User implements BaseModel {
 
     /**
      * Construct new User with a null password
@@ -33,7 +36,6 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -45,4 +47,12 @@ public class User {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

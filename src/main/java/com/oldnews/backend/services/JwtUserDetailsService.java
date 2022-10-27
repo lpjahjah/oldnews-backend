@@ -1,6 +1,6 @@
 package com.oldnews.backend.services;
 
-import com.oldnews.backend.repositories.UserRepository;
+import com.oldnews.backend.app.repositories.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +29,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.oldnews.backend.models.User user = userRepository.findByUsername(username).orElse(null);
+        com.oldnews.backend.app.models.User user = userRepository.findByUsername(username).orElse(null);
 
         if (user != null)
             return new User(user.getUsername(), user.getPassword(), Collections.emptyList());
@@ -37,8 +37,8 @@ public class JwtUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("User not found with username: " + username);
     }
 
-    public com.oldnews.backend.models.User save(com.oldnews.backend.models.User user) {
-        com.oldnews.backend.models.User newUser = new com.oldnews.backend.models.User(user);
+    public com.oldnews.backend.app.models.User save(com.oldnews.backend.app.models.User user) {
+        com.oldnews.backend.app.models.User newUser = new com.oldnews.backend.app.models.User(user);
         newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
         return userRepository.save(newUser);
     }

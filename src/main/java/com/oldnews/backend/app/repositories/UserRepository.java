@@ -1,8 +1,8 @@
-package com.oldnews.backend.repositories;
+package com.oldnews.backend.app.repositories;
 
 
+import com.oldnews.backend.app.models.User;
 import com.oldnews.backend.common.repositories.BaseRepository;
-import com.oldnews.backend.models.User;
 
 import java.util.Optional;
 

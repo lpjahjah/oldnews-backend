@@ -1,11 +1,12 @@
-package com.oldnews.backend.controllers;
+package com.oldnews.backend.app.controllers;
 
+import com.oldnews.backend.app.dtos.UserDTO;
+import com.oldnews.backend.app.models.User;
+import com.oldnews.backend.app.repositories.UserRepository;
 import com.oldnews.backend.common.dtos.AuthRefreshRequestDTO;
 import com.oldnews.backend.common.dtos.AuthRefreshResponseDTO;
 import com.oldnews.backend.common.dtos.AuthRequestDTO;
 import com.oldnews.backend.common.dtos.AuthResponseDTO;
-import com.oldnews.backend.models.User;
-import com.oldnews.backend.repositories.UserRepository;
 import com.oldnews.backend.services.JwtUserDetailsService;
 import com.oldnews.backend.utils.JwtTokenUtil;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +56,9 @@ public class AuthController {
 
         final String token = jwtTokenUtil.generateToken(user);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(user);
+        final UserDTO userDTO = new UserDTO(user);
 
-        return ResponseEntity.ok(new AuthResponseDTO(user, token, refreshToken));
+        return ResponseEntity.ok(new AuthResponseDTO(userDTO, token, refreshToken));
     }
 
     @PostMapping("/refresh")
@@ -75,8 +77,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody User user) throws Exception {
-        return ResponseEntity.ok(userDetailsService.save(user));
+    public ResponseEntity<UserDTO> saveUser(@RequestBody User user) throws Exception {
+        UserDTO userDTO = new UserDTO(userDetailsService.save(user));
+        return ResponseEntity.ok(userDTO);
     }
 
     private void authenticate(String username, String password) throws Exception {

@@ -1,6 +1,6 @@
 package com.oldnews.backend.utils;
 
-import com.oldnews.backend.models.User;
+import com.oldnews.backend.app.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
