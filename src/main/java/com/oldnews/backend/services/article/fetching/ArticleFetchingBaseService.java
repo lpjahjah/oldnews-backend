@@ -28,6 +28,7 @@ public class ArticleFetchingBaseService {
 
     private final WebClient client = WebClient.create("https://byabbe.se/on-this-day");
 
+//    WAITING WHILE ARTICLE MODEL IS NOT READY
     private final Consumer<String> storeData = response -> {
         log.info(response);
     };
