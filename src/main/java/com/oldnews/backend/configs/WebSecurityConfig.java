@@ -1,5 +1,7 @@
 package com.oldnews.backend.configs;
 
+import com.oldnews.backend.configs.jwt.JwtAuthenticationEntryPoint;
+import com.oldnews.backend.configs.jwt.JwtRequestFilter;
 import com.oldnews.backend.services.JwtUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
