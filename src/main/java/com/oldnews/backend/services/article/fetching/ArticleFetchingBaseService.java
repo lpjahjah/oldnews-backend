@@ -43,6 +43,14 @@ public class ArticleFetchingBaseService {
                 .bodyToFlux(String.class);
     }
 
+    /**
+     * Fetch all articles for requested date.
+     * Since this code is reactive, for logging purposes onError and onSuccess lambdas are requested.
+     *
+     * @param date LocalDate from witch the api will get the articles.
+     * @param onError Consumer<Throwable> for logging on error.
+     * @param onSuccess Runnable for logging on success.
+     */
     public void fetchAllArticleTypes(
             LocalDate date,
             Consumer<Throwable> onError,
@@ -54,6 +62,14 @@ public class ArticleFetchingBaseService {
                 .subscribe(storeData, onError, onSuccess);
     }
 
+    /**
+     * Fetch all articles for requested dates, better perform when fetching multiples dates at once.
+     * Since this code is reactive, for logging purposes onError and onSuccess lambdas are requested.
+     *
+     * @param dates List<LocalDate> from witch the api will get the articles.
+     * @param onError Consumer<Throwable> for logging on error.
+     * @param onSuccess Runnable for logging on success.
+     */
     public void fetchAllArticleTypes(
             List<LocalDate> dates,
             Consumer<Throwable> onError,
@@ -70,15 +86,17 @@ public class ArticleFetchingBaseService {
                 }).subscribe(storeData, onError, onSuccess);
     }
 
-    public void fetchEvents(LocalDate date) {
-        fetchArticles(date, ArticleTypesEnum.events).subscribe(storeData);
-    }
+//    NOT NECESSARY
 
-    public void fetchDeaths(LocalDate date) {
-        fetchArticles(date, ArticleTypesEnum.deaths).subscribe(storeData);
-    }
-
-    public void fetchBirths(LocalDate date) {
-        fetchArticles(date, ArticleTypesEnum.births).subscribe(storeData);
-    }
+//    public void fetchEvents(LocalDate date) {
+//        fetchArticles(date, ArticleTypesEnum.events).subscribe(storeData);
+//    }
+//
+//    public void fetchDeaths(LocalDate date) {
+//        fetchArticles(date, ArticleTypesEnum.deaths).subscribe(storeData);
+//    }
+//
+//    public void fetchBirths(LocalDate date) {
+//        fetchArticles(date, ArticleTypesEnum.births).subscribe(storeData);
+//    }
 }
