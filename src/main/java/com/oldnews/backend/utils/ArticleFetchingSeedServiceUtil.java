@@ -1,4 +1,4 @@
-package com.oldnews.backend.services.article.fetching;
+package com.oldnews.backend.utils;
 
 import com.oldnews.backend.common.enums.ArticleTypesEnum;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Component
-public class ArticleFetchingBaseService {
+public class ArticleFetchingSeedServiceUtil {
     @Value("${app.article-seeder: true}")
     private boolean seeder;
 
@@ -28,11 +28,11 @@ public class ArticleFetchingBaseService {
     }
 
     private static final Logger log =
-            LoggerFactory.getLogger(ArticleFetchingBaseService.class);
+            LoggerFactory.getLogger(ArticleFetchingSeedServiceUtil.class);
 
     private final WebClient client;
 
-    public ArticleFetchingBaseService() {
+    public ArticleFetchingSeedServiceUtil() {
         HttpClient httpClient = HttpClient.create()
                 .secure(spec -> spec.
                         sslContext(SslProvider.defaultClientProvider().getSslContext())

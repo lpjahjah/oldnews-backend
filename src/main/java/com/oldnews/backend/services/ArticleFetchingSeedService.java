@@ -1,5 +1,6 @@
-package com.oldnews.backend.services.article.fetching;
+package com.oldnews.backend.services;
 
+import com.oldnews.backend.utils.ArticleFetchingSeedServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,14 +14,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class ArticleFetchingSeedService {
 
-    private final ArticleFetchingBaseService config;
+    private final ArticleFetchingSeedServiceUtil config;
 
     private static final Logger log =
             LoggerFactory.getLogger(ArticleFetchingSeedService.class);
 
     private final List<LocalDate> dates = new ArrayList<>();
 
-    public ArticleFetchingSeedService(ArticleFetchingBaseService config) {
+    public ArticleFetchingSeedService(ArticleFetchingSeedServiceUtil config) {
         this.config = config;
         LocalDate date = LocalDate.of(
                 2020, 1, 1
