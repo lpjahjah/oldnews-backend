@@ -36,7 +36,7 @@ public class ArticleFetchingBaseService {
     private Flux<String> fetchArticles(LocalDate date, ArticleTypesEnum articleType) {
         return client.get()
                 .uri(uriBuilder -> uriBuilder
-                                .path("/{month}/{day}/" + articleType + ".json")
+                                .path(String.format("/{month}/{day}/%s.json", articleType))
                                 .build(date.getMonthValue(), date.getDayOfMonth())
                         )
                 .accept(MediaType.APPLICATION_JSON)
