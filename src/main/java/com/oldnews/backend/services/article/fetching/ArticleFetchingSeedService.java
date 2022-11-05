@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ArticleFetchingSeedService {
@@ -15,12 +18,19 @@ public class ArticleFetchingSeedService {
     private static final Logger log =
             LoggerFactory.getLogger(ArticleFetchingSeedService.class);
 
-    private final LocalDate date = LocalDate.of(
-            LocalDate.now().getYear(), 1, 1
-    );
+    private final List<LocalDate> dates = new ArrayList<>();
 
     public ArticleFetchingSeedService(ArticleFetchingBaseService config) {
         this.config = config;
+        LocalDate date = LocalDate.of(
+                2020, 1, 1
+        );
+
+        dates.add(date);
+
+        for (int i = 1; dates.get(dates.size()-1).getYear() == date.getYear(); i++){
+            dates.add(date.plusDays(i));
+        }
     }
 
     @PostConstruct
@@ -29,10 +39,17 @@ public class ArticleFetchingSeedService {
 
         log.info("STARTING SEED");
 
+        long time = System.nanoTime();
+
         config.fetchAllArticleTypes(
-                date,
+                dates,
                 err -> log.error("ERROR WHILE SEEDING", err),
-                () -> log.info("SEED FINISHED SUCCESSFULLY")
+                () -> {
+                    long elapsedTime = TimeUnit.SECONDS.convert(System.nanoTime() - time, TimeUnit.NANOSECONDS);
+                    log.info(
+                            String.format("SEED FINISHED SUCCESSFULLY IN %d SECONDS", elapsedTime)
+                    );
+                }
         );
 
     }

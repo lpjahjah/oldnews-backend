@@ -5,10 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.SslProvider;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +30,19 @@ public class ArticleFetchingBaseService {
     private static final Logger log =
             LoggerFactory.getLogger(ArticleFetchingBaseService.class);
 
-    private final WebClient client = WebClient.create("https://byabbe.se/on-this-day");
+    private final WebClient client;
+
+    public ArticleFetchingBaseService() {
+        HttpClient httpClient = HttpClient.create()
+                .secure(spec -> spec.
+                        sslContext(SslProvider.defaultClientProvider().getSslContext())
+                        .handshakeTimeout(Duration.ofSeconds(30)));
+
+        this.client = WebClient.builder()
+                .baseUrl("https://byabbe.se/on-this-day")
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+    }
 
 //    WAITING WHILE ARTICLE MODEL IS NOT READY
     private final Consumer<String> storeData = response -> {
@@ -86,18 +102,4 @@ public class ArticleFetchingBaseService {
                             });
                 }).subscribe(storeData, onError, onSuccess);
     }
-
-//    NOT NECESSARY
-
-//    public void fetchEvents(LocalDate date) {
-//        fetchArticles(date, ArticleTypesEnum.events).subscribe(storeData);
-//    }
-//
-//    public void fetchDeaths(LocalDate date) {
-//        fetchArticles(date, ArticleTypesEnum.deaths).subscribe(storeData);
-//    }
-//
-//    public void fetchBirths(LocalDate date) {
-//        fetchArticles(date, ArticleTypesEnum.births).subscribe(storeData);
-//    }
 }
