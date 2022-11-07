@@ -1,12 +1,14 @@
 package com.oldnews.backend.app.models;
 
 import com.oldnews.backend.common.enums.ArticleTypesEnum;
+import com.oldnews.backend.common.models.BaseModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -14,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name="article")
-public class Article {
+public class Article implements BaseModel {
 
     @Id
     @GeneratedValue
@@ -38,4 +40,24 @@ public class Article {
 
     @Column(name = "article_type")
     private ArticleTypesEnum articleType;
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return null;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime createdAt) {
+
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return null;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime updatedtAt) {
+
+    }
 }
