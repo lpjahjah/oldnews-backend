@@ -5,6 +5,8 @@ import com.oldnews.backend.common.models.BaseModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -35,29 +37,25 @@ public class Article implements BaseModel {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "deleted")
-    private boolean deleted;
-
     @Column(name = "article_type")
     private ArticleTypesEnum articleType;
 
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted")
+    private boolean deleted;
     @Override
-    public LocalDateTime getCreatedAt() {
-        return null;
+    public boolean getDeleted() {
+        return false;
     }
 
     @Override
-    public void setCreatedAt(LocalDateTime createdAt) {
-
-    }
-
-    @Override
-    public LocalDateTime getUpdatedAt() {
-        return null;
-    }
-
-    @Override
-    public void setUpdatedAt(LocalDateTime updatedtAt) {
-
+    public void setDeleted(boolean deleted) {
     }
 }

@@ -15,4 +15,8 @@ public interface BaseModel {
     public LocalDateTime getUpdatedAt();
 
     public void setUpdatedAt(LocalDateTime updatedtAt);
+
+    public boolean getDeleted();
+
+    public void setDeleted(boolean deleted);
 }

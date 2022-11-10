@@ -55,4 +55,16 @@ public class User implements BaseModel {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @Override
+    public boolean getDeleted() {
+        return false;
+    }
+
+    @Override
+    public void setDeleted(boolean deleted) {
+    }
 }
