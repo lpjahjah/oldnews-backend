@@ -1,5 +1,6 @@
 package com.oldnews.backend.app.models;
 
+import com.oldnews.backend.common.enums.ArticleTypesEnum;
 import com.oldnews.backend.common.models.BaseModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,45 +9,36 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "`user`")
-public class User implements BaseModel {
-
-    /**
-     * Construct new User with a null password
-     */
-    public User(User newUser) {
-        this.username = newUser.getUsername();
-        this.firstName = newUser.getFirstName();
-        this.lastName = newUser.getLastName();
-        this.email = newUser.getEmail();
-    }
+@Table(name="article")
+public class Article implements BaseModel {
 
     @Id
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Column(name = "source", nullable = false)
+    private String source;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Lob
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+    @Column(name = "article_type")
+    private ArticleTypesEnum articleType;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -58,7 +50,6 @@ public class User implements BaseModel {
 
     @Column(name = "deleted")
     private boolean deleted;
-
     @Override
     public boolean getDeleted() {
         return false;

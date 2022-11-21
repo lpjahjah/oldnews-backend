@@ -1,4 +1,4 @@
-package com.oldnews.backend.configs;
+package com.oldnews.backend.configs.jwt;
 
 import com.oldnews.backend.services.JwtUserDetailsService;
 import com.oldnews.backend.utils.JwtTokenUtil;
