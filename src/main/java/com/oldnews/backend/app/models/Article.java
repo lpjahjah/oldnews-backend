@@ -33,19 +33,20 @@ public class Article implements BaseModel {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "era", nullable = false)
     private IsoEra era = IsoEra.CE;
 
     @Column(name = "source", nullable = false)
     private String source;
 
-    @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "text")
     private String description;
 
     @Column(name = "popularity_score", nullable = false)
     private Integer popularityScore = 0;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "article_type")
     private ArticleTypesEnum articleType;
 
@@ -57,8 +58,8 @@ public class Article implements BaseModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted")
-    private boolean deleted;
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
     @Override
     public boolean getDeleted() {
         return false;
