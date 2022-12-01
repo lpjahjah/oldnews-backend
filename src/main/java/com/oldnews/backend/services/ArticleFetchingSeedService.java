@@ -44,7 +44,6 @@ public class ArticleFetchingSeedService {
 
         config.fetchAllArticleTypes(
                 dates,
-                err -> log.error("ERROR WHILE SEEDING", err),
                 () -> {
                     long elapsedTime = TimeUnit.SECONDS.convert(System.nanoTime() - time, TimeUnit.NANOSECONDS);
                     log.info(

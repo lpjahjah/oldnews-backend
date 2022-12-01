@@ -1,5 +1,8 @@
 package com.oldnews.backend.utils;
 
+import com.oldnews.backend.app.models.Article;
+import com.oldnews.backend.app.repositories.ArticleRepository;
+import com.oldnews.backend.common.dtos.*;
 import com.oldnews.backend.common.enums.ArticleTypesEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +17,13 @@ import reactor.netty.tcp.SslProvider;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Component
@@ -27,12 +35,21 @@ public class ArticleFetchingSeedServiceUtil {
         return seeder;
     }
 
+    private final ArticleRepository articleRepository;
+
     private static final Logger log =
             LoggerFactory.getLogger(ArticleFetchingSeedServiceUtil.class);
 
     private final WebClient client;
 
-    public ArticleFetchingSeedServiceUtil() {
+    private final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+            .parseDefaulting(ChronoField.YEAR, 2020)
+            .appendPattern("MMMM d")
+            .toFormatter(Locale.ENGLISH) ;
+
+    public ArticleFetchingSeedServiceUtil(ArticleRepository articleRepository) {
+        this.articleRepository = articleRepository;
+
         HttpClient httpClient = HttpClient.create()
                 .secure(spec -> spec.
                         sslContext(SslProvider.defaultClientProvider().getSslContext())
@@ -44,12 +61,40 @@ public class ArticleFetchingSeedServiceUtil {
                 .build();
     }
 
-//    WAITING WHILE ARTICLE MODEL IS NOT READY
-    private final Consumer<String> storeData = response -> {
-        log.info(response);
+    public ArticleRepository getArticleRepository() {
+        return articleRepository;
+    }
+
+    private final Consumer<SeedServiceBaseResponseDTO> storeData = response -> {
+        LocalDate date = LocalDate.parse(response.getDate(), formatter);
+        Integer articlesStored = 0;
+
+        for (SeedServiceArticleDTO seedArticle: response.getArticles()){
+            try {
+                Article article = Article.fillFromSeed(date, response.getArticleType(), seedArticle);
+                getArticleRepository().save(article);
+                articlesStored++;
+            } catch (Exception e){
+                log.error("Error while storing record: ", e);
+            }
+        }
+
+        log.info(String.format("Articles stored: %d", articlesStored));
     };
 
-    private Flux<String> fetchArticles(LocalDate date, ArticleTypesEnum articleType) {
+    private final BiConsumer<Throwable, Object> onError = (throwable, o) -> {
+        log.error("Error while processing {}. Cause: {}", o, throwable.getMessage());
+    };
+
+    private Class<? extends SeedServiceBaseResponseDTO> getTypeClass(ArticleTypesEnum articleType){
+        return switch (articleType) {
+            case births -> SeedServiceBirthsResponseDTO.class;
+            case deaths -> SeedServiceDeathsResponseDTO.class;
+            case events -> SeedServiceEventsResponseDTO.class;
+        };
+    }
+
+    private Flux<? extends SeedServiceBaseResponseDTO> fetchArticles(LocalDate date, ArticleTypesEnum articleType) {
         return client.get()
                 .uri(uriBuilder -> uriBuilder
                                 .path(String.format("/{month}/{day}/%s.json", articleType))
@@ -57,7 +102,7 @@ public class ArticleFetchingSeedServiceUtil {
                         )
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToFlux(String.class);
+                .bodyToFlux(getTypeClass(articleType));
     }
 
     /**
@@ -65,18 +110,18 @@ public class ArticleFetchingSeedServiceUtil {
      * Since this code is reactive, for logging purposes onError and onSuccess lambdas are requested.
      *
      * @param date LocalDate from witch the api will get the articles.
-     * @param onError Consumer<Throwable> for logging on error.
-     * @param onSuccess Runnable for logging on success.
+     * @param onComplete Runnable for logging on completion.
      */
     public void fetchAllArticleTypes(
             LocalDate date,
-            Consumer<Throwable> onError,
-            Runnable onSuccess
+            Runnable onComplete
     ) {
         Flux
                 .fromIterable(Arrays.stream(ArticleTypesEnum.values()).toList())
                 .flatMap(articleType -> fetchArticles(date, articleType))
-                .subscribe(storeData, onError, onSuccess);
+                .onErrorContinue(onError)
+                .doOnComplete(onComplete)
+                .subscribe(storeData);
     }
 
     /**
@@ -84,22 +129,21 @@ public class ArticleFetchingSeedServiceUtil {
      * Since this code is reactive, for logging purposes onError and onSuccess lambdas are requested.
      *
      * @param dates List<LocalDate> from witch the api will get the articles.
-     * @param onError Consumer<Throwable> for logging on error.
-     * @param onSuccess Runnable for logging on success.
+     * @param onComplete Runnable for logging on completion.
      */
     public void fetchAllArticleTypes(
             List<LocalDate> dates,
-            Consumer<Throwable> onError,
-            Runnable onSuccess
+            Runnable onComplete
     ) {
         Flux
                 .fromIterable(Arrays.stream(ArticleTypesEnum.values()).toList())
-                .flatMap(articleType -> {
-                    return Flux
+                .flatMap(articleType -> Flux
                             .fromIterable(dates)
-                            .flatMap(date -> {
-                                return fetchArticles(date, articleType);
-                            });
-                }).subscribe(storeData, onError, onSuccess);
+                            .flatMap(date ->
+                                    fetchArticles(date, articleType)
+                            ).onErrorContinue(onError)
+                ).onErrorContinue(onError)
+                .doOnComplete(onComplete)
+                .subscribe(storeData);
     }
 }
