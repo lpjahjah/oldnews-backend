@@ -34,7 +34,7 @@ public class Article implements BaseModel {
     private LocalDate date;
 
     @Column(name = "era", nullable = false)
-    private IsoEra era;
+    private IsoEra era = IsoEra.CE;
 
     @Column(name = "source", nullable = false)
     private String source;
@@ -42,6 +42,9 @@ public class Article implements BaseModel {
     @Lob
     @Column(name = "description", nullable = false)
     private String description;
+
+    @Column(name = "popularity_score", nullable = false)
+    private Integer popularityScore = 0;
 
     @Column(name = "article_type")
     private ArticleTypesEnum articleType;
