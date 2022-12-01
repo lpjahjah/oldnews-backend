@@ -30,6 +30,18 @@ public abstract class BaseController<T extends BaseModel, Repo extends BaseRepos
         return ResponseEntity.ok().body(repository.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<T> GetById(
+            @PathVariable String id
+    ) {
+        UUID uuid = UUID.fromString(id);
+
+        T entity = repository.findById(uuid).orElse(null);
+
+        return ResponseEntity.ok(entity);
+    }
+
+
     @PostMapping()
     public ResponseEntity<?> Post(
             @RequestBody T body
