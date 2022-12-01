@@ -1,6 +1,7 @@
 package com.oldnews.backend.app.controllers;
 
 import com.oldnews.backend.app.dtos.UserDTO;
+import com.oldnews.backend.app.dtos.UserRegisterDTO;
 import com.oldnews.backend.app.models.User;
 import com.oldnews.backend.app.repositories.UserRepository;
 import com.oldnews.backend.common.dtos.AuthRefreshRequestDTO;
@@ -77,7 +78,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody User user) throws Exception {
+    public ResponseEntity<UserDTO> saveUser(@RequestBody UserRegisterDTO user) throws Exception {
         UserDTO userDTO = new UserDTO(userDetailsService.save(user));
         return ResponseEntity.ok(userDTO);
     }

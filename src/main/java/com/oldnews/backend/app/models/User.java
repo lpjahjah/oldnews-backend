@@ -1,5 +1,7 @@
 package com.oldnews.backend.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.oldnews.backend.app.dtos.UserRegisterDTO;
 import com.oldnews.backend.common.models.BaseModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,13 @@ public class User implements BaseModel {
         this.email = newUser.getEmail();
     }
 
+    public User(UserRegisterDTO newUser) {
+        this.username = newUser.getUsername();
+        this.firstName = newUser.getFirstName();
+        this.lastName = newUser.getLastName();
+        this.email = newUser.getEmail();
+    }
+
     @Id
     @GeneratedValue
     private UUID id;
@@ -36,6 +45,7 @@ public class User implements BaseModel {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -56,8 +66,8 @@ public class User implements BaseModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "deleted")
-    private boolean deleted;
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 
     @Override
     public boolean getDeleted() {
