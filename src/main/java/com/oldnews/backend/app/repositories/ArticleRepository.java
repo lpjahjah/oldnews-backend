@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import java.time.chrono.IsoEra;
 
 public interface ArticleRepository extends BaseRepository<Article> {
-    Page<Article> findAllByDateBetweenOrderByPopularityScoreDesc(LocalDate fromDate, LocalDate toDate, Pageable pageable);
+    Page<Article> findAllByDateBetweenAndDeletedIsFalseOrderByPopularityScoreDesc(LocalDate fromDate, LocalDate toDate, Pageable pageable);
 
-    Page<Article> findAllByDateBetweenAndEraOrderByDateDesc(LocalDate fromDate, LocalDate toDate, IsoEra era, Pageable pageable);
+    Page<Article> findAllByDateBetweenAndEraAndDeletedIsFalseOrderByDateDesc(LocalDate fromDate, LocalDate toDate, IsoEra era, Pageable pageable);
 
-    Page<Article> findAllByDateBetweenAndEraOrderByDateAsc(LocalDate fromDate, LocalDate toDate, IsoEra era, Pageable pageable);
+    Page<Article> findAllByDateBetweenAndEraAndDeletedIsFalseOrderByDateAsc(LocalDate fromDate, LocalDate toDate, IsoEra era, Pageable pageable);
 
 }

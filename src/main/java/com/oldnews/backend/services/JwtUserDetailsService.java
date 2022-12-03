@@ -30,7 +30,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.oldnews.backend.app.models.User user = userRepository.findByUsername(username).orElse(null);
+        com.oldnews.backend.app.models.User user = userRepository.findByUsernameAndDeletedIsFalse(username).orElse(null);
 
         if (user != null)
             return new User(user.getUsername(), user.getPassword(), Collections.emptyList());
