@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -69,14 +70,22 @@ public class ArticleFetchingSeedServiceUtil {
         LocalDate date = LocalDate.parse(response.getDate(), formatter);
         Integer articlesStored = 0;
 
+        List<Article> articles = new ArrayList<Article>();
+
         for (SeedServiceArticleDTO seedArticle: response.getArticles()){
             try {
                 Article article = Article.fillFromSeed(date, response.getArticleType(), seedArticle);
-                getArticleRepository().save(article);
+                articles.add(article);
                 articlesStored++;
             } catch (Exception e){
-                log.error("Error while storing record: ", e);
+                log.error("Error while filling record: ", e);
             }
+        }
+
+        try {
+            getArticleRepository().saveAll(articles);
+        } catch (Exception e){
+            log.error("Error while storing record to database: ", e);
         }
 
         log.info(String.format("Articles stored: %d", articlesStored));
