@@ -27,7 +27,7 @@ public abstract class BaseController<T extends BaseModel, Repo extends BaseRepos
 
     @GetMapping()
     public ResponseEntity<List<T>> GetAll() {
-        return ResponseEntity.ok().body(repository.findAll());
+        return ResponseEntity.ok().body(repository.findAllByDeletedIsFalse());
     }
 
     @GetMapping("/{id}")
