@@ -36,7 +36,7 @@ public abstract class BaseController<T extends BaseModel, Repo extends BaseRepos
     ) {
         UUID uuid = UUID.fromString(id);
 
-        T entity = repository.findById(uuid).orElse(null);
+        T entity = repository.findByIdAndDeletedIsFalse(uuid).orElse(null);
 
         return ResponseEntity.ok(entity);
     }
@@ -58,7 +58,11 @@ public abstract class BaseController<T extends BaseModel, Repo extends BaseRepos
         try {
             UUID uuid = UUID.fromString(id);
 
-            T object = repository.findById(uuid).orElse(null);
+            T object = repository.findByIdAndDeletedIsFalse(uuid).orElse(null);
+
+            if (object == null)
+                return ResponseEntity.notFound().build();
+
             body.setId(object.getId());
 
             T updatedObject = repository.save(body);
@@ -75,7 +79,10 @@ public abstract class BaseController<T extends BaseModel, Repo extends BaseRepos
         try {
             UUID uuid = UUID.fromString(id);
 
-            T object = repository.findById(uuid).orElse(null);
+            T object = repository.findByIdAndDeletedIsFalse(uuid).orElse(null);
+
+            if (object == null)
+                return ResponseEntity.notFound().build();
 
             T deletedObject = repository.save(object);
             return ResponseEntity.ok(deletedObject);

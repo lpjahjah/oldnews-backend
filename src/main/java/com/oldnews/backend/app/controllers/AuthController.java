@@ -50,7 +50,7 @@ public class AuthController {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        final User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElse(null);
+        final User user = userRepository.findByUsernameAndDeletedIsFalse(authenticationRequest.getUsername()).orElse(null);
 
         if (user == null)
             return ResponseEntity.notFound().build();

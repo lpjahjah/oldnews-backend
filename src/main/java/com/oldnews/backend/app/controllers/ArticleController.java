@@ -40,15 +40,15 @@ public class ArticleController extends BaseController<Article, ArticleRepository
         Page<Article> articles;
 
         switch (orderBy) {
-            case popularity -> articles = repository.findAllByDateBetweenOrderByPopularityScoreDesc(
+            case popularity -> articles = repository.findAllByDateBetweenAndDeletedIsFalseOrderByPopularityScoreDesc(
                     fromDate, toDate, pageable
             );
 
-            case newer -> articles = repository.findAllByDateBetweenAndEraOrderByDateDesc(
+            case newer -> articles = repository.findAllByDateBetweenAndEraAndDeletedIsFalseOrderByDateDesc(
                     fromDate, toDate, IsoEra.CE, pageable
             );
 
-            case older -> articles = repository.findAllByDateBetweenAndEraOrderByDateAsc(
+            case older -> articles = repository.findAllByDateBetweenAndEraAndDeletedIsFalseOrderByDateAsc(
                     fromDate, toDate, IsoEra.BCE, pageable
             );
 
