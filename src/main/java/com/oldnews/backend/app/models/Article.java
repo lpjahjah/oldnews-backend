@@ -11,8 +11,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.MonthDay;
 import java.time.chrono.IsoEra;
 import java.util.UUID;
 
@@ -30,12 +30,14 @@ public class Article implements BaseModel {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "era", nullable = false)
-    private IsoEra era = IsoEra.CE;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride( name = "year", column = @Column(name = "date_year")),
+            @AttributeOverride( name = "month", column = @Column(name = "date_month")),
+            @AttributeOverride( name = "day", column = @Column(name = "date_day")),
+            @AttributeOverride( name = "era", column = @Column(name = "date_era"))
+    })
+    private ArticleDate date;
 
     @Column(name = "source", nullable = false)
     private String source;
@@ -69,29 +71,30 @@ public class Article implements BaseModel {
     public void setDeleted(boolean deleted) {
     }
 
+    public void setDateFromSeed(String year, MonthDay monthDay){
+        int formattedYear = Integer.parseInt(
+                year.replaceAll("[\\D]", "")
+        );
+
+        this.date = new ArticleDate(
+                formattedYear,
+                monthDay,
+                year.contains("BC") ? IsoEra.BCE : IsoEra.CE
+        );
+    }
+
     public static Article fillFromSeed(
-            LocalDate date,
+            MonthDay monthDay,
             ArticleTypesEnum articleType,
             SeedServiceArticleDTO seedItem
     ) throws Exception {
-
-        int formattedYear = Integer.parseInt(
-                seedItem.getYear().replaceAll("[\\D]", "")
-        );
-
-        date = LocalDate.of(
-                formattedYear,
-                date.getMonthValue(),
-                date.getDayOfMonth()
-        );
 
         SeedServiceWikipediaDTO firstWikipediaItem = seedItem.getWikipedia().size() > 0
             ? seedItem.getWikipedia().get(0)
                 : null;
 
         Article article = new Article();
-        article.setDate(date);
-        article.setEra(seedItem.getYear().contains("BC") ? IsoEra.BCE : IsoEra.CE);
+        article.setDateFromSeed(seedItem.getYear(), monthDay);
         article.setTitle(firstWikipediaItem != null ? firstWikipediaItem.getTitle() : "");
         article.setSource(firstWikipediaItem != null ? firstWikipediaItem.getWikipedia() : "");
         article.setDescription(seedItem.getDescription() != null ? seedItem.getDescription() : "");
