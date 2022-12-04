@@ -17,9 +17,8 @@ import reactor.netty.tcp.SslProvider;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,11 +41,7 @@ public class ArticleFetchingSeedServiceUtil {
             LoggerFactory.getLogger(ArticleFetchingSeedServiceUtil.class);
 
     private final WebClient client;
-
-    private final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-            .parseDefaulting(ChronoField.YEAR, 2020)
-            .appendPattern("MMMM d")
-            .toFormatter(Locale.ENGLISH) ;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH);
 
     public ArticleFetchingSeedServiceUtil(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
@@ -67,7 +62,7 @@ public class ArticleFetchingSeedServiceUtil {
     }
 
     private final Consumer<SeedServiceBaseResponseDTO> storeData = response -> {
-        LocalDate date = LocalDate.parse(response.getDate(), formatter);
+        MonthDay date = MonthDay.parse(response.getDate(), formatter);
         Integer articlesStored = 0;
 
         List<Article> articles = new ArrayList<Article>();
@@ -127,9 +122,12 @@ public class ArticleFetchingSeedServiceUtil {
     ) {
         Flux
                 .fromIterable(Arrays.stream(ArticleTypesEnum.values()).toList())
-                .flatMap(articleType -> fetchArticles(date, articleType))
+                .flatMap(articleType ->
+                        fetchArticles(date, articleType)
+                                .onErrorContinue(onError)
+                                .doAfterTerminate(onComplete)
+                )
                 .onErrorContinue(onError)
-                .doOnComplete(onComplete)
                 .subscribe(storeData);
     }
 
@@ -150,9 +148,11 @@ public class ArticleFetchingSeedServiceUtil {
                             .fromIterable(dates)
                             .flatMap(date ->
                                     fetchArticles(date, articleType)
-                            ).onErrorContinue(onError)
-                ).onErrorContinue(onError)
-                .doOnComplete(onComplete)
+                            )
+                                .onErrorContinue(onError)
+                                .doAfterTerminate(onComplete)
+                )
+                .onErrorContinue(onError)
                 .subscribe(storeData);
     }
 }
