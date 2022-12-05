@@ -1,11 +1,16 @@
-FROM eclipse-temurin:17-jdk-alpine
-WORKDIR /app
-COPY . .
-RUN ./gradlew bootJar
-COPY app/build/lib/* build/lib/
-COPY app/build/libs/backend-0.0.1-SNAPSHOT.jar build/
+#FROM gradle:7.6-jdk17-alpine AS build
+#COPY --chown=gradle:gradle . /home/gradle/src
+#WORKDIR /home/gradle/src
+#RUN gradle build --no-daemon
+
+#FROM eclipse-temurin:17-jre-alpine
+#ENV SPRING_PROFILES_ACTIVE docker
+#RUN mkdir /app
+#COPY --from=build /home/gradle/src/build/libs/*.jar /app/spring-boot-application.jar
+#ENTRYPOINT ["java", "-jar", "spring-boot-application.jar"]
 
 FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app/build
 ENV SPRING_PROFILES_ACTIVE docker
-ENTRYPOINT java -jar backend-0.0.1-SNAPSHOT.jar
+WORKDIR /app
+COPY build/libs/*.jar /app/spring-boot-application.jar
+ENTRYPOINT ["java", "-jar", "spring-boot-application.jar"]
