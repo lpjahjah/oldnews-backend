@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN ./gradlew bootJar
 COPY app/build/lib/* build/lib/
-COPY app/build/libs/app.jar build/
+COPY app/build/libs/backend-0.0.1-SNAPSHOT.jar build/
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app/build
