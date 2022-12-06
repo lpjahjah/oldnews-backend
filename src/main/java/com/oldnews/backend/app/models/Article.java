@@ -52,6 +52,9 @@ public class Article implements BaseModel {
     @Column(name = "article_type")
     private ArticleTypesEnum articleType;
 
+    @Column(name = "image_source")
+    private String imageSource;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

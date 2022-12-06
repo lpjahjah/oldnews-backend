@@ -1,5 +1,6 @@
 package com.oldnews.backend.common.repositories;
 
+import com.oldnews.backend.common.models.BaseModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
  * @typeparam T Object type.
  */
 @NoRepositoryBean
-public interface BaseRepository<T> extends JpaRepository<T, UUID> {
+public interface BaseRepository<T extends BaseModel> extends JpaRepository<T, UUID> {
     @Override
     Optional<T> findById(UUID id);
 
