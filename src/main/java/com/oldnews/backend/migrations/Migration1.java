@@ -68,7 +68,7 @@ public class Migration1 implements Migration {
                 .fromIterable(articles)
                 .flatMap(imageFetchingUtil::fetchArticleImage)
                 .delayElements(Duration.ofMillis(500))
-                .limitRate(50)
+                .limitRate(20)
                 .doOnNext(finish())
                 .then(Mono.empty());
     }
