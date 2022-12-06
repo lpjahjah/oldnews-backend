@@ -67,8 +67,8 @@ public class Migration1 implements Migration {
         return Flux
                 .fromIterable(articles)
                 .flatMap(imageFetchingUtil::fetchArticleImage)
-                .delayElements(Duration.ofSeconds(3))
-                .limitRate(10)
+                .delayElements(Duration.ofMillis(500))
+                .limitRate(20)
                 .doOnNext(finish())
                 .then(Mono.empty());
     }
